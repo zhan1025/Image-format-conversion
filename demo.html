@@ -1,0 +1,77 @@
+<!--
+ * @Author: your name
+ * @Date: 2020-01-09 11:28:55
+ * @LastEditTime : 2020-01-09 15:17:35
+ * @LastEditors  : Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \demo\demo.html
+ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+  #imgResource{
+    height: 200px;
+    width: 200px;
+  }
+  </style>
+</head>
+<body>
+  <input type="file" id="imgResource">
+<select id="myselect">
+	<option value="0">webp格式</option>
+    <option value="1">jpeg格式</option>
+    <option value="2">png格式</option> 
+</select>
+<button id="start">开始转换</button>
+<p>预览：</p>
+<img id="imgShow" src="" alt="">
+</body>
+<script>
+/*事件*/
+document.getElementById('start').addEventListener('click', function(){
+	getImg((image)=>{
+    var can=imgToCanvas(image),
+    imgshow=document.getElementById("imgShow");
+    imgshow.setAttribute('src',canvasToImg(can));
+	});
+});
+//获取图片信息
+function getImg(fn){
+	var imgFile = new FileReader();
+	try{
+		imgFile.onload = function(e) {
+			var image = new Image();
+			image.src= e.target.result; //base64数据 
+			image.onload=function(){
+				fn(image);
+			}
+    }
+		imgFile.readAsDataURL(document.getElementById('imgResource').files[0]);
+	}catch(e){
+		console.log("请上传图片！"+e);
+	}
+}
+// 把image 转换为 canvas对象  
+function imgToCanvas(image) { 	
+  console.dir(image)
+  console.log(image.name,image.sizes)
+    var canvas = document.createElement("canvas");  
+    canvas.width = image.width;  
+    canvas.height = image.height;    
+    canvas.getContext("2d").drawImage(image, 0, 0);    
+    return canvas;  
+}  
+//canvas转换为image
+function canvasToImg(canvas) {
+	var array=["image/webp","image/jpeg","image/png"],
+	    type=document.getElementById('myselect').value;
+    var src = canvas.toDataURL(array[type]);
+    return src;
+}
+</script>
+</html>
